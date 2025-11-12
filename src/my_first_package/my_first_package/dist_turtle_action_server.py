@@ -38,6 +38,10 @@ class DistTurtleServer(Node):
         self.quantile_time = quantile_time.value
         self.almosts_time = almosts_time.value
 
+        output_msg = "quantile_time is" + str(self.quantile_time) + "."
+        output_msg = output_msg +"and almost_goal_time is" +str(self.almosts_time) + "."
+        self.get_logger().into(output_msg)
+
         self.add_on_set_parameters_callback(self.parameter_callback)
 
     def parameter_callback(self, params):
@@ -49,7 +53,10 @@ class DistTurtleServer(Node):
             if param.name == 'almost_goal_time':
                 self.almosts_time = param.value
 
-        print('quatile_time and almost_goal_time is', self.quantile_time, self.almosts_time)
+        output_msg = "quantile_time is" + str(self.quantile_time) + "."
+        output_msg = output_msg +"and almost_goal_time is" +str(self.almosts_time) + "."
+        self.get_logger().into(output_msg)
+        
         return SetParametersResult(successful=True)
 
     def calc_diff_pose(self):
