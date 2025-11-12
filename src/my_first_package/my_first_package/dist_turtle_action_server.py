@@ -8,6 +8,8 @@ from geometry_msgs.msg import Twist
 from my_first_package_msgs.action import DistTurtle
 from my_first_package.my_subscriber import TurtlesimSubscriber
 
+from rcl_interfaces.msg import SetParametersResult
+
 import math
 import time
 
@@ -28,7 +30,27 @@ class DistTurtleServer(Node):
         self.current_pose = Pose()          
         self.previous_pose = Pose()
         self.publisher = self.create_publisher(Twist, 'turtle1/cmd_vel', 10)
-        self.action_server = ActionServer(self, DistTurtle, 'dist_turtle', self.execute_callback)  
+        self.action_server = ActionServer(self, DistTurtle, 'dist_turtle', self.execute_callback) 
+        self.declare_parameter('quatile_time', 0.75)
+        self.declare_parameter('almost_goal_time', 0.95)
+
+        (quantile_time, almosts_time) = self.get_parameters(['quatile_time','almost_goal_time'])
+        self.quantile_time = quantile_time.value
+        self.almosts_time = almosts_time.value
+
+        self.add_on_set_parameters_callback(self.parameter_callback)
+
+    def parameter_callback(self, params):
+        for param in params:
+            print(param.name, "is changed to ", param.value)
+
+            if param.name == 'quatile_time':
+                self.quantile_time = param.value
+            if param.name == 'almost_goal_time':
+                self.almosts_time = param.value
+
+        print('quatile_time and almost_goal_time is', self.quantile_time, self.almosts_time)
+        return SetParametersResult(successful=True)
 
     def calc_diff_pose(self):
         if self.is_first_time:
